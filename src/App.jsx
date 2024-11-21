@@ -57,7 +57,7 @@ export default function App() {
 
   return (
     <>
-      <div style={{ marginTop: "20vh" }}>
+      <div class="mt-20">
         <img src={logo} class="h-20 mx-auto" />
         <h1 class=" mx-auto flex text-xl justify-center mt-4 mb-4">Sign up</h1>
         <div
