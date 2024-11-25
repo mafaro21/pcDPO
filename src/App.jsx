@@ -1,12 +1,19 @@
 import { useState } from "react";
 import "./App.css";
 import "./index.css";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import logo from "./img/PrivacyCureLogo.png";
 import axios from "axios";
+import {
+  Button,
+  InputText,
+  Dropdown,
+  InputNumber,
+  FileUpload,
+} from "primereact";
 
 export default function App() {
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -41,11 +48,32 @@ export default function App() {
       minLength: 4,
     },
     {
+      type: "name",
+      label: "Gender",
+      register: "gender",
+      required: " true",
+      minLength: 4,
+    },
+    {
+      type: "number",
+      label: "Phone number",
+      register: "phone",
+      required: " true",
+      minLength: 10,
+    },
+    {
       type: "email",
       label: "Email",
       register: "email",
       required: "true",
       minLength: 13,
+    },
+    {
+      type: "checkbox",
+      label: "Are you employed?",
+      register: "employed",
+      required: "true",
+      minLength: 2,
     },
     {
       type: "file",
@@ -55,82 +83,90 @@ export default function App() {
     },
   ];
 
+  const genderOptions = [{ name: "Male" }, { name: "Female" }];
+
   return (
     <>
-      <div class="mt-20">
-        <img src={logo} class="h-20 mx-auto" />
-        <h1 class=" mx-auto flex text-xl justify-center mt-4 mb-4">Sign up</h1>
-        <div
-          class="max-w-4xl bg-blue-700 mx-auto flex justify-center"
-          style={{ marginTop: "2px", borderRadius: "20px" }}
-        >
-          <form
-            class="flex flex-col p-7 md:w-3/4 lg:w-2/3 sm:w-full"
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            {input.map((input) => (
-              <div>
-                <div class="flex">
-                  {input.type === "file" ? (
-                    <p
-                      class=" text-white rounded w-1/2"
-                      style={{ marginTop: "10px", padding: 0 }}
-                    >
-                      Choose your file blah blah blah
-                    </p>
-                  ) : null}
-                  <input
-                    type={input.type}
-                    placeholder={input.label}
-                    class="mt-6 w-90 border focus:border-sky-500 focus:ring-sky-500"
-                    style={{
-                      borderRadius: "5px",
-                      width: "100%",
-                      padding: "6px",
-                      outline: "none",
-                    }}
-                    {...register(input.register, {
-                      required: input.required
-                        ? "This field is required"
-                        : false,
-                      minLength: input.minLength
-                        ? {
-                            value: input.minLength,
-                            message: `Minimum length is ${input.minLength} characters`,
-                          }
-                        : undefined,
-                    })}
-                    aria-invalid={!!errors[input.register]}
-                  />
-                </div>
-                {errors[input.register] && (
-                  <p role="alert" className="text-red-400 text-sm">
-                    <b>{errors[input.register]?.message}</b>
-                  </p>
-                )}
-              </div>
-            ))}
+      <h1 className="flex justify-content-center mt-6">Sign Up</h1>
 
-            {/* <input
-              placeholder="tet"
-              class="mt-6"
-              style={{ borderRadius: "5px", width: "100%", padding: "6px" }}
-            />
-            <input
-              placeholder="tet"
-              class="mt-6"
-              style={{ borderRadius: "5px", width: "100%", padding: "6px" }}
-            /> */}
-            <button
-              class="mx-auto bg-blue-950 p-2 mt-6 text-white hover:bg-blue-500"
-              style={{ borderRadius: "5px" }}
-              // {...(loading ? "disabled" : "none")}
-            >
-              {loading ? "Signing You Up....." : "Sign Up"}
-            </button>
-          </form>
+      <form
+        style={{
+          // maxWidth: "80vw",
+          backgroundColor: "#083D77",
+          margin: "0 auto",
+          borderRadius: "8px",
+        }}
+        className="w-full md:w-10 lg:w-6 mt-4 p-1"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="p-5 card flex justify-content-center flex-column">
+          <InputText
+            className="mt-5"
+            placeholder="First name"
+            {...register("firstname")}
+          />
+          <InputText
+            className="mt-5"
+            placeholder="Last name"
+            {...register("lastname")}
+          />
+          <Dropdown
+            className="mt-5"
+            placeholder="Gender"
+            {...register("gender")}
+            options={genderOptions}
+            optionLabel="name"
+          />
+
+          <InputNumber
+            className="mt-5"
+            placeholder="Phone number"
+            useGrouping={false}
+            {...register("phone")}
+          />
+
+          <InputText
+            className="mt-5"
+            placeholder="Email"
+            type="email"
+            {...register("email")}
+          />
+
+          <Dropdown
+            className="mt-5"
+            placeholder="Are you currently employed?"
+            {...register("employed")}
+          />
+
+          <h3 className="text-white mt-5">Select your document below:</h3>
+
+          {/* <Controller
+            name="file"
+            control={control}
+            rules={{ required: "Please select a file" }} // Validation rule for the file field
+            render={({ field }) => ( */}
+          <FileUpload
+            // className="bg-red-400"
+            // {...field}
+            mode="basic"
+            // name="demo[]"
+            // url="/api/upload"
+            accept="pdf/*"
+            maxFileSize={8000000}
+            {...register("file")}
+            customUpload
+          />
+          {/* )}
+          /> */}
         </div>
-      </div>
+
+        <Button
+          type="submit"
+          className="mt-4 mb-4 mx-auto flex justify-content-center"
+          label="Sign Up"
+          raised
+        />
+      </form>
     </>
   );
 }
