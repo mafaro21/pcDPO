@@ -9,11 +9,16 @@ import "primereact/resources/themes/lara-light-blue/theme.css"; // Theme CSS
 import "primereact/resources/primereact.min.css"; // Core CSS
 import "/node_modules/primeflex/primeflex.css"; // Flex utilities
 import NotFound from "./pages/404.jsx";
+import Home from "./pages/Home.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+  },
+  {
+    path: "/dashboard",
+    element: <Home />,
   },
   {
     path: "*",
