@@ -24,18 +24,22 @@ export default function App() {
   const {
     register,
     handleSubmit,
-    watch,
+    // setValue,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    shouldFocusError: false, // Disable automatic focus on errors
+  });
 
   const onFileSelect = (e) => {
     const selectedFile = e.files[0];
-    setFile(selectedFile); // Update the file state
-    setValue("file", selectedFile); // Update React Hook Form state and trigger validation
+    setFile(selectedFile);
+    // setValue("file", selectedFile);
   };
 
   const onSubmit = (data) => {
+    setLoading(true);
+
     if (!file) {
       toast.current.show({
         severity: "warn",
@@ -44,6 +48,7 @@ export default function App() {
         life: 8000,
       });
       setLoading(false);
+      return;
     }
 
     const capitalizedFirstname =
@@ -52,21 +57,30 @@ export default function App() {
     const capitalizedLastname =
       data.lastname.charAt(0).toUpperCase() + data.lastname.slice(1);
 
-    const formData = {
-      first_name: capitalizedFirstname,
-      last_name: capitalizedLastname,
-      gender: data.gender,
-      phone: data.phone,
-      email: data.email,
-      employeed: data.employed,
-      supporting_documents: file,
-    };
+    // const formData = {
+    //   first_name: capitalizedFirstname,
+    //   last_name: capitalizedLastname,
+    //   gender: data.gender,
+    //   phone: data.phone,
+    //   email: data.email,
+    //   employeed: data.employed,
+    //   supporting_documents: file,
+    // };
 
-    // console.log(formData);
-    setLoading(true);
+    const completeData = new FormData();
+    completeData.append("first_name", capitalizedFirstname);
+    completeData.append("last_name", capitalizedLastname);
+    completeData.append("gender", data.gender);
+    completeData.append("phone", data.phone);
+    completeData.append("email", data.email);
+    completeData.append("employeed", data.employed);
+    completeData.append("supporting_documents[0][document_type]", "CV");
+    completeData.append("supporting_documents[0][document]", file);
+
+    console.log(completeData);
 
     // axios
-    //   .post(`${API}/applicant`, formData)
+    //   .post(`${API}/applicant`, completeData)
     //   .then((res) => {
     //     console.log(res.data);
     //     toast.current.show({
@@ -79,8 +93,9 @@ export default function App() {
     //     console.log(err);
     //     toast.current.show({
     //       severity: "error",
-    //       detail: "There has been an error processing your application",
-    //       life: 5000,
+    //       summary: "There has been an error processing your application",
+    //       detail: err.response.data.error,
+    //       life: 9000,
     //     });
     //   })
     //   .finally(() => {
@@ -122,7 +137,13 @@ export default function App() {
           <InputText
             className="mt-2"
             placeholder="First name"
-            {...register("firstname", { required: "First name is required" })}
+            {...register("firstname", {
+              required: "First name is required", // Validation for required field
+              minLength: {
+                value: 6,
+                message: "Your first name is too short", // Validation for minimum length
+              },
+            })}
           />
           {errors.firstname && (
             <p className="text-red-500">
@@ -133,7 +154,13 @@ export default function App() {
           <InputText
             className="mt-5"
             placeholder="Last name"
-            {...register("lastname", { required: "Last name is required" })}
+            {...register("lastname", {
+              required: "Last name is required", // Validation for required field
+              minLength: {
+                value: 6,
+                message: "Your last name is too short", // Validation for minimum length
+              },
+            })}
           />
           {errors.lastname && (
             <p className="text-red-500">
@@ -168,7 +195,13 @@ export default function App() {
             name="phone"
             control={control}
             defaultValue={null}
-            rules={{ required: "Phone number is required" }}
+            rules={{
+              required: "Phone number is required",
+              minLength: {
+                value: 8,
+                message: "Your phone number is too short",
+              },
+            }}
             render={({ field }) => (
               <InputNumber
                 className="mt-5 w-full"
@@ -195,6 +228,7 @@ export default function App() {
                 value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
                 message: "Invalid email address",
               },
+              minLength: { value: 12, message: "Your email is too short" },
             })}
           />
           {errors.email && (
@@ -226,15 +260,17 @@ export default function App() {
             </p>
           )}
 
-          <h3 className="text-white mt-5">Select your document below:</h3>
+          <h3 className="text-white mt-5">
+            Select your document below (PDF only):
+          </h3>
 
           <Controller
             name="file"
             control={control}
             defaultValue={null}
-            rules={{
-              validate: (value) => (value ? true : "Please select a file"),
-            }} // Validation rule for the file field
+            // rules={{
+            //   validate: (value) => (value ? true : "Please select a file"),
+            // }}
             render={({ field }) => (
               <FileUpload
                 className="mt-3"
@@ -242,7 +278,6 @@ export default function App() {
                 mode="basic"
                 accept="application/pdf"
                 maxFileSize={8000000}
-                // {...register("file")}
                 onSelect={onFileSelect}
                 customUpload
                 uploadLabel="Upload"
@@ -261,7 +296,7 @@ export default function App() {
           <ProgressSpinner
             style={{ width: "50px", height: "50px" }}
             strokeWidth="3"
-            className="flex justify-content-center mb-4"
+            className="mx-auto flex justify-content-center mb-4"
           />
         ) : (
           <Button
