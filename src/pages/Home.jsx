@@ -2,40 +2,19 @@ import { Menubar, InputText, Avatar } from "primereact";
 import React from "react";
 import lost from "../img/lost.jpg";
 import logo from "../img/PrivacyCureLogo.png";
+import "../index.css";
 
 export default function Home() {
   return (
     <>
-      {/* failed navbar  */}
-      {/* <div
-        style={{
-          background: "linear-gradient(to right, #fff 1%, #083D77 100%)",
-          borderBottom: "#083D77 solid 1px",
-        }}
-        className="sticky top-0 z-10  grid"
-      >
-        <img
-          src={logo}
-          alt="Logo"
-          height="70px"
-          className="mr-6 pl-5 col-fixed"
-        />
-
-        <div className="flex space-x-6 justify-end mt-3 col mr-5">
-          <div className="mx-auto"></div>
-          <div>Navbar</div>
-          <div>Navbar</div>
-        </div>
-      </div> */}
-
-      <div className="grid w-full">
-        <div className="col-1.5 flex flex-column p-6 bg-red-200">
+      {/* <div className="flex">
+        <div className="p-6 w-2 bg-blue-100">
           <img src={logo} height={"60px"} />
-          <div className="mt-6 py-3">Home</div>
-          <div className="mt-4 py-3">dddd</div>
-          <div className="mt-4 py-3">dddd</div>
-          <div className="mt-4 py-3">dddd</div>
-          <div className="mt-4 py-3">dddd</div>
+          <div className="mt-6 py-2">Home</div>
+          <div className="mt-4 py-2">dddd</div>
+          <div className="mt-4 py-2">dddd</div>
+          <div className="mt-4 py-2">dddd</div>
+          <div className="mt-4 py-2">dddd</div>
 
           <div style={{ bottom: 30, position: "fixed" }}>
             <Avatar
@@ -44,14 +23,22 @@ export default function Home() {
               size="large"
               shape="circle"
             />
-            <div className="">Account Name over here</div>
-            <div className="">Account Name over here</div>
-            <div className="">Account Name over here</div>
+            <div className="">Account Name ds</div>
+            <div className="">Account Name ds</div>
           </div>
         </div>
 
-        <div className="bg-blue-100 p-6 min-h-screen col">
-          <div className="text-xl">Welcome to the dashboard!!</div>
+        <div className="bg-blue-300 p-6 min-h-screen col ">
+          <div className="text-xl">Welcome to your dashboard!!</div>
+        </div>
+      </div> */}
+
+      <div className="bg-blue-800 min-h-screen">
+        <div className="p-8 text-white md:text-4xl sm:text-2xl ">
+          <div className="md:mt-6 sm:mt-0">
+            Thank you for signing up to be apart of us!
+          </div>
+          {/* <div className="mt-4">Dashboard features are coming soon...</div> */}
         </div>
       </div>
     </>

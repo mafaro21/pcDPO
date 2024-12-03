@@ -14,12 +14,17 @@ import {
   Toast,
 } from "primereact";
 import API from "./ApiConfig";
+import { Link, useNavigate } from "react-router-dom";
+import { Checkbox } from "primereact/checkbox";
 
 export default function App() {
   const toast = useRef(null);
 
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [checked, setChecked] = useState(false);
+
+  const navigate = useNavigate();
 
   const {
     register,
@@ -27,6 +32,7 @@ export default function App() {
     // setValue,
     control,
     formState: { errors },
+    reset,
   } = useForm({
     shouldFocusError: false, // Disable automatic focus on errors
   });
@@ -57,16 +63,6 @@ export default function App() {
     const capitalizedLastname =
       data.lastname.charAt(0).toUpperCase() + data.lastname.slice(1);
 
-    // const formData = {
-    //   first_name: capitalizedFirstname,
-    //   last_name: capitalizedLastname,
-    //   gender: data.gender,
-    //   phone: data.phone,
-    //   email: data.email,
-    //   employeed: data.employed,
-    //   supporting_documents: file,
-    // };
-
     const completeData = new FormData();
     completeData.append("first_name", capitalizedFirstname);
     completeData.append("last_name", capitalizedLastname);
@@ -76,21 +72,34 @@ export default function App() {
     completeData.append("employeed", data.employed);
     completeData.append("supporting_documents[0][document_type]", "CV");
     completeData.append("supporting_documents[0][document]", file);
+    completeData.append("consent", checked);
 
     console.log(completeData);
 
     // axios
     //   .post(`${API}/applicant`, completeData)
     //   .then((res) => {
-    //     console.log(res.data);
+    //     // console.log(res.data);
     //     toast.current.show({
     //       severity: "success",
     //       detail: "Your application has been sent successfully",
     //       life: 5000,
     //     });
+
+    //     reset({
+    //       firstname: "",
+    //       lastname: "",
+    //       gender: "",
+    //       phone: "",
+    //       email: "",
+    //       employed: "",
+    //       file: null,
+    //     });
+
+    //     navigate("/dashboard");
     //   })
     //   .catch((err) => {
-    //     console.log(err);
+    //     // console.log(err);
     //     toast.current.show({
     //       severity: "error",
     //       summary: "There has been an error processing your application",
@@ -120,7 +129,9 @@ export default function App() {
         height={"100px"}
         className="flex justify-content-center mx-auto mt-3"
       />
-      <h1 className="flex justify-content-center mt-2">Sign Up</h1>
+      <h1 className="flex justify-content-center mt-1 px-5">
+        Sign Up to be one of our DPO's
+      </h1>
       <Toast ref={toast} />
 
       <form
@@ -130,7 +141,7 @@ export default function App() {
           margin: "0 auto",
           borderRadius: "8px",
         }}
-        className="w-full md:w-10 lg:w-6 mt-4 p-1"
+        className="w-full md:w-10 lg:w-6 mt-4 p-1 mb-6"
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="p-4 card flex justify-content-center flex-column">
@@ -191,26 +202,21 @@ export default function App() {
             </p>
           )}
 
-          <Controller
-            name="phone"
-            control={control}
-            defaultValue={null}
-            rules={{
+          <InputText
+            className="mt-5"
+            placeholder="Phone Number"
+            keyfilter="int"
+            {...register("phone", {
               required: "Phone number is required",
-              minLength: {
-                value: 8,
-                message: "Your phone number is too short",
+              pattern: {
+                value: /^[0-9]*$/, // Allowing only numbers, including zero
+                message: "Please enter a valid phone number",
               },
-            }}
-            render={({ field }) => (
-              <InputNumber
-                className="mt-5 w-full"
-                placeholder="Phone number"
-                useGrouping={false}
-                // prefix="+263"
-                onChange={(e) => field.onChange(e.value)}
-              />
-            )}
+              minLength: {
+                value: 10,
+                message: "Your phone number is too short", // Validation for minimum length
+              },
+            })}
           />
           {errors.phone && (
             <p className="text-red-500">
@@ -292,11 +298,51 @@ export default function App() {
           )}
         </div>
 
+        <div className="ml-4">
+          <Controller
+            name="policy"
+            control={control}
+            defaultValue={false}
+            rules={{
+              required:
+                "You must read through and accept the terms and conditions to continue",
+            }}
+            render={({ field }) => (
+              <Checkbox
+                inputId="policy"
+                {...field} // Bind checkbox to React Hook Form
+                checked={field.value} // Controlled value for checkbox
+                onChange={(e) => field.onChange(e.checked)}
+                onClick={() => setChecked(!checked)}
+              />
+            )}
+          />
+          <label htmlFor="policy" className="ml-2 text-white">
+            I have read and agree to the{" "}
+            <Link
+              to={"https://privacycure.com/privacy-policy.html"}
+              target="_blank"
+              style={{ color: "cyan" }}
+            >
+              Privacy Policy
+            </Link>{" "}
+            terms & consent to my data being collected
+          </label>
+        </div>
+
+        {/* Display error message if checkbox is not checked */}
+        {errors.policy && (
+          <p className="text-red-500 ml-4 mt-2">
+            <b>{errors.policy.message}</b>
+          </p>
+        )}
+
         {loading ? (
           <ProgressSpinner
             style={{ width: "50px", height: "50px" }}
             strokeWidth="3"
-            className="mx-auto flex justify-content-center mb-4"
+            className="mx-auto flex justify-content-center mb-4 mt-4"
+            // disabled={checked == false ? false : true}
           />
         ) : (
           <Button
